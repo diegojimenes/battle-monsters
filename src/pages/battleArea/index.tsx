@@ -61,6 +61,7 @@ export const BattleArea = () => {
 
             const index = Math.floor(Math.random() * sounds.length);
             sounds[index].currentTime = 0;
+            sounds[index].volume = 0.5;
             sounds[index].play();
 
 
@@ -80,6 +81,7 @@ export const BattleArea = () => {
         if (isCancelled.current) return;
 
         victorySound.currentTime = 0;
+        victorySound.volume = 0.5;
         victorySound.play();
         setOpen(true);
     };
