@@ -1,6 +1,15 @@
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 
-export const container = styled.div`
+const shake = keyframes`
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+`;
+
+export const container = styled.div<{ isHit?: boolean }>`
     font-family: "Pixelify Sans", sans-serif;
     padding: 10px;
     background-color: #D8BA7E;
@@ -8,6 +17,13 @@ export const container = styled.div`
     cursor: pointer;
     width: 155px;
     height: 240px;
+
+    ${({ isHit }) =>
+        isHit &&
+        css`
+            animation: ${shake} 0.4s linear;
+        `
+    }
 `
 
 export const imageContainer = styled.div`

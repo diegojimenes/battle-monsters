@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
 import { LifeBar } from '../../components/lifeBar';
@@ -11,8 +11,15 @@ import * as St from './styles';
 
 import type { BattleResult } from '../../hooks/useBattle';
 
+import attackSoundSrc from '../../assets/sounds/hit.wav';
+import punchSoundSrc from '../../assets/sounds/punch.mp3';
+import punch2SoundSrc from '../../assets/sounds/punch2.wav';
+import victorySoundSrc from '../../assets/sounds/victory.mp3';
+
 export const BattleArea = () => {
     const [isOpen, setOpen] = useState(false)
+
+    const [hitMonster, setHitMonster] = useState<'monsterA' | 'monsterB' | null>(null);
 
     const [life, setLife] = useState<{ firstMonster: string; secondMonster: string }>({
         firstMonster: "100%",
@@ -24,6 +31,15 @@ export const BattleArea = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const isCancelled = useRef(false);
+
+    const sounds = [
+        new Audio(attackSoundSrc),
+        new Audio(punchSoundSrc),
+        new Audio(punch2SoundSrc)
+    ];
+
+
     const battleResult = location.state as BattleResult | undefined;
 
     function wait(ms: number) {
@@ -33,25 +49,44 @@ export const BattleArea = () => {
     const runBattle = async () => {
         if (!battleResult) return;
 
+        const victorySound = new Audio(victorySoundSrc)
+
         for (const value of battleResult.log) {
+            if (isCancelled.current) return;
+
             setLogs(prevLogs => [
                 ...prevLogs,
                 `Round ${value.round}: ${value.attacker} ataca ${value.defender} causando ${value.damage}`
             ]);
 
+            const index = Math.floor(Math.random() * sounds.length);
+            sounds[index].currentTime = 0;
+            sounds[index].play();
+
+
+            setHitMonster(value.defender === monsterA?.name ? 'monsterA' : 'monsterB');
             setLife({
                 firstMonster: `${(value.hpStatus.monsterA / (monsterA?.hp || 1)) * 100}%`,
                 secondMonster: `${(value.hpStatus.monsterB / (monsterB?.hp || 1)) * 100}%`
             });
 
+            setTimeout(() => {
+                setHitMonster(null);
+            }, 400);
+
             await wait(1000);
         }
 
+        if (isCancelled.current) return;
+
+        victorySound.currentTime = 0;
+        victorySound.play();
         setOpen(true);
     };
 
     const handleRestart = () => {
         setLife({ firstMonster: "100%", secondMonster: "100%" });
+        setLogs([])
         setOpen(false);
         runBattle();
     };
@@ -67,7 +102,12 @@ export const BattleArea = () => {
             return;
         }
 
-        runBattle()
+        isCancelled.current = false;
+        runBattle();
+
+        return () => {
+            isCancelled.current = true;
+        };
     }, [battleResult])
 
     const monsterA = battleResult?.monsterA;
@@ -95,6 +135,7 @@ export const BattleArea = () => {
                     defense={monsterA?.defense ?? 0}
                     speed={monsterA?.speed ?? 0}
                     hp={monsterA?.hp ?? 0}
+                    isHit={hitMonster === 'monsterA'}
                 />
                 <St.VS>
                     VS
@@ -106,6 +147,7 @@ export const BattleArea = () => {
                     defense={monsterB?.defense ?? 0}
                     speed={monsterB?.speed ?? 0}
                     hp={monsterB?.hp ?? 0}
+                    isHit={hitMonster === 'monsterB'}
                 />
             </St.competitors>
             <St.log>

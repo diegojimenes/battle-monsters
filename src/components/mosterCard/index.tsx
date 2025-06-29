@@ -11,8 +11,9 @@ export const MonsterCard = ({
     defense,
     speed,
     hp,
-    type
-}: Imonster) => {
+    type,
+    isHit = false
+}: Imonster & { isHit?: boolean }) => {
 
     const image = {
         spider,
@@ -22,7 +23,7 @@ export const MonsterCard = ({
     }
 
     return <>
-        <St.container className="monsterCard">
+        <St.container className="monsterCard" isHit={isHit}>
             <St.imageContainer>
                 <St.photo src={image[type]} />
             </St.imageContainer>

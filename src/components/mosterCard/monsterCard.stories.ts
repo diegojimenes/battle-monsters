@@ -23,7 +23,8 @@ export const skeleton: Story = {
     defense: 15,
     speed: 20,
     hp: 100,
-    type: "skeleton"
+    type: "skeleton",
+    isHit: false
   },
 };
 
@@ -34,7 +35,8 @@ export const gnome: Story = {
     defense: 15,
     speed: 20,
     hp: 100,
-    type: "gnome"
+    type: "gnome",
+    isHit: false
   },
 };
 
@@ -45,7 +47,8 @@ export const golem: Story = {
     defense: 15,
     speed: 20,
     hp: 100,
-    type: "golem"
+    type: "golem",
+    isHit: false
   },
 };
 
@@ -56,6 +59,7 @@ export const spider: Story = {
     defense: 15,
     speed: 20,
     hp: 100,
-    type: "spider"
+    type: "spider",
+    isHit: false
   },
 };
