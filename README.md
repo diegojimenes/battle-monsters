@@ -15,6 +15,10 @@ Clone o repositório e instale as dependências:
   yarn
 ```
 
+## Node Version
+Este projeto usa Node.js versão 22.17.0  
+Use `nvm use` após clonar o projeto para garantir a versão correta.
+
 ## ▶️ Como iniciar a aplicação
 ```bash
   yarn dev
