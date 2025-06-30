@@ -13,7 +13,7 @@ export const Modal = ({
     title: string,
     open: Boolean,
     size: "mid" | "lg"
-    onClose: () => void,
+    onClose?: () => void,
     children: JSX.Element,
     hideClose?: boolean
 }) => {
@@ -27,6 +27,10 @@ export const Modal = ({
             <St.header>
                 {
                     !hideClose && <St.close onClick={() => {
+                        if (!onClose) {
+                            return
+                        }
+
                         onClose()
                     }}>X</St.close>
                 }

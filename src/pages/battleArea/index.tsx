@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
 import { LifeBar } from '../../components/lifeBar';
@@ -11,106 +10,24 @@ import * as St from './styles';
 
 import type { BattleResult } from '../../hooks/useBattle';
 
-import attackSoundSrc from '../../assets/sounds/hit.wav';
-import punchSoundSrc from '../../assets/sounds/punch.mp3';
-import punch2SoundSrc from '../../assets/sounds/punch2.wav';
-import victorySoundSrc from '../../assets/sounds/victory.mp3';
+import { useBattleRunner } from '../../hooks/useBattleRunner';
 
 export const BattleArea = () => {
-    const [isOpen, setOpen] = useState(false)
-
-    const [hitMonster, setHitMonster] = useState<'monsterA' | 'monsterB' | null>(null);
-
-    const [life, setLife] = useState<{ firstMonster: string; secondMonster: string }>({
-        firstMonster: "100%",
-        secondMonster: "100%",
-    })
-
-    const [logs, setLogs] = useState<string[]>([])
-
     const location = useLocation();
     const navigate = useNavigate();
-
-    const isCancelled = useRef(false);
-
-    const sounds = [
-        new Audio(attackSoundSrc),
-        new Audio(punchSoundSrc),
-        new Audio(punch2SoundSrc)
-    ];
-
-
     const battleResult = location.state as BattleResult | undefined;
 
-    function wait(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    const runBattle = async () => {
-        if (!battleResult) return;
-
-        const victorySound = new Audio(victorySoundSrc)
-
-        for (const value of battleResult.log) {
-            if (isCancelled.current) return;
-
-            setLogs(prevLogs => [
-                ...prevLogs,
-                `Round ${value.round}: ${value.attacker} ataca ${value.defender} causando ${value.damage}`
-            ]);
-
-            const index = Math.floor(Math.random() * sounds.length);
-            sounds[index].currentTime = 0;
-            sounds[index].volume = 0.5;
-            sounds[index].play();
-
-
-            setHitMonster(value.defender === monsterA?.name ? 'monsterA' : 'monsterB');
-            setLife({
-                firstMonster: `${(value.hpStatus.monsterA / (monsterA?.hp || 1)) * 100}%`,
-                secondMonster: `${(value.hpStatus.monsterB / (monsterB?.hp || 1)) * 100}%`
-            });
-
-            setTimeout(() => {
-                setHitMonster(null);
-            }, 400);
-
-            await wait(1000);
-        }
-
-        if (isCancelled.current) return;
-
-        victorySound.currentTime = 0;
-        victorySound.volume = 0.5;
-        victorySound.play();
-        setOpen(true);
-    };
-
-    const handleRestart = () => {
-        setLife({ firstMonster: "100%", secondMonster: "100%" });
-        setLogs([])
-        setOpen(false);
-        runBattle();
-    };
+    const {
+        logs,
+        life,
+        hitMonster,
+        battleEnded,
+        restart
+    } = useBattleRunner(battleResult);
 
     const handleBackToMenu = () => {
         navigate("/");
     };
-
-
-    useEffect(() => {
-        if (!battleResult) {
-            navigate("/");
-            return;
-        }
-
-        isCancelled.current = false;
-        runBattle();
-
-        return () => {
-            isCancelled.current = true;
-        };
-    }, [battleResult])
 
     const monsterA = battleResult?.monsterA;
     const monsterB = battleResult?.monsterB;
@@ -156,7 +73,7 @@ export const BattleArea = () => {
                 <Log logs={logs} />
             </St.log>
         </St.battleArena>
-        <Modal title='Vitoria' open={isOpen} hideClose={true} size='lg' onClose={() => setOpen(false)}>
+        <Modal title='Vitoria' open={battleEnded} hideClose={true} size='lg'>
             <St.modalContent>
                 <>
                     <St.winner>
@@ -164,7 +81,7 @@ export const BattleArea = () => {
                     </St.winner>
                     <Button
                         label='Reiniciar a batalha'
-                        onClick={handleRestart}
+                        onClick={restart}
                     />
                     <Button
                         label='Voltar para o menu'
