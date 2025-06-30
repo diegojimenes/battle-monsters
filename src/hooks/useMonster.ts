@@ -52,6 +52,39 @@ export function useMonster() {
 
     useEffect(() => {
         const stored = loadFromStorage();
+        if (stored.length === 0) {
+            const seed: Imonster[] = [
+                {
+                    name: "exemple1",
+                    attack: 10,
+                    defense: 20,
+                    speed: 25,
+                    hp: 100,
+                    type: 'spider'
+                },
+                {
+                    name: "exemple2",
+                    attack: 20,
+                    defense: 30,
+                    speed: 30,
+                    hp: 150,
+                    type: 'gnome'
+                },
+                {
+                    name: "exemple3",
+                    attack: 30,
+                    defense: 40,
+                    speed: 40,
+                    hp: 200,
+                    type: 'golem'
+                }
+            ]
+
+            dispatch({ type: 'LOAD', payload: seed });
+
+            return
+        }
+
         dispatch({ type: 'LOAD', payload: stored });
     }, []);
 

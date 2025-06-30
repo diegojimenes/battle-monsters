@@ -7,6 +7,7 @@ import { Input } from '../../../components/input';
 import * as St from '../styles';
 import { TextError } from "../../../components/input/styles";
 import type { Imonster } from "../../../hooks/useMonster";
+import { Loading } from "../../../components/loading";
 
 const schema = yup.object({
     name: yup.string().required("Nome é obrigatório"),
@@ -17,7 +18,7 @@ const schema = yup.object({
     type: yup.mixed().oneOf(["spider", "gnome", "golem", "skeleton"]).required("Tipo de criatura é obrigatório"),
 }).required();
 
-export const MonsterForm = ({ onSubmit }: { onSubmit: (monster: Imonster) => void }) => {
+export const MonsterForm = ({ onSubmit, load }: { load: boolean, onSubmit: (monster: Imonster) => void }) => {
     const { watch, setValue, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema)
     });
@@ -106,9 +107,13 @@ export const MonsterForm = ({ onSubmit }: { onSubmit: (monster: Imonster) => voi
         {
             errors.type?.message && <TextError>{errors.type?.message}</TextError>
         }
-        <Button
-            label="Salvar monstro"
-            onClick={() => { }}
-        />
+        {
+            load
+                ? <Loading />
+                : <Button
+                    label="Salvar monstro"
+                    onClick={() => { }}
+                />
+        }
     </St.form>
 }

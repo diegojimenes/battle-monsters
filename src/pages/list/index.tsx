@@ -13,12 +13,18 @@ import * as St from './styles';
 
 export const List = () => {
     const [isOpen, setOpen] = useState(false)
+    const [load, setLoad] = useState(false)
     const navigate = useNavigate();
     const { monsters, createMonster } = useMonster();
 
     const handleSubmit = (data: Imonster) => {
+        setLoad(true)
         createMonster(data)
-        setOpen(false)
+
+        setTimeout(() => {
+            setLoad(false)
+            setOpen(false)
+        }, 500)
     }
 
     const handleBack = () => navigate("/")
@@ -63,7 +69,7 @@ export const List = () => {
         </St.list>
         <Modal title='Novo Monstro' open={isOpen} size='lg' onClose={handleCloseMonsterModal}>
             <St.modalContent>
-                <MonsterForm onSubmit={handleSubmit} />
+                <MonsterForm onSubmit={handleSubmit} load={load} />
             </St.modalContent>
         </Modal>
     </St.container>

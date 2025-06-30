@@ -13,9 +13,11 @@ import { useMonster, type Imonster } from '../../hooks/useMonster';
 import { useBattle } from '../../hooks/useBattle';
 
 import * as St from './styles';
+import { Loading } from '../../components/loading';
 
 export const Home = () => {
     const [isOpenBattle, setOpenBattle] = useState(false)
+    const [load, setLoad] = useState(false)
     const { monsters } = useMonster();
 
     const [error, setError] = useState(false)
@@ -39,12 +41,16 @@ export const Home = () => {
         if (selectedMonsters.firstMonster == undefined || selectedMonsters.secondMonster == undefined) {
             return setError(true)
         }
-
-        setError(false)
+        setLoad(true)
 
         const log = battle({ ...selectedMonsters.firstMonster }, { ...selectedMonsters.secondMonster })
 
-        navigate("battle-area", { state: { ...log, monsterA: selectedMonsters.firstMonster, monsterB: selectedMonsters.secondMonster } })
+        setTimeout(() => {
+            setLoad(false)
+            setError(false)
+            navigate("battle-area", { state: { ...log, monsterA: selectedMonsters.firstMonster, monsterB: selectedMonsters.secondMonster } })
+        }, 500)
+
     }
 
     const handleSelectFirstMonster = (e: any) => {
@@ -111,7 +117,15 @@ export const Home = () => {
                         <TextError>Selecione seus monstros</TextError>
                     </St.Error>
                 }
-                <Button label='Iniciar batalha' onClick={handleBattle} />
+                {
+                    load
+                        ? <Loading />
+                        : <Button
+                            label='Iniciar batalha'
+                            onClick={handleBattle}
+                        />
+                }
+
             </St.modalContent>
         </Modal>
     </St.container>
