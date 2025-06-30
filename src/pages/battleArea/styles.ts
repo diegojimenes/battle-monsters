@@ -1,6 +1,18 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 import arena from '../../assets/arena/arena.png';
+
+const pulse = keyframes`
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+`;
+
+const glow = keyframes`
+  0% { text-shadow: 0 0 10px gold; }
+  50% { text-shadow: 0 0 20px orange; }
+  100% { text-shadow: 0 0 10px gold; }
+`;
 
 export const container = styled.div`
     margin: 0px;
@@ -78,4 +90,6 @@ export const modalContent = styled.div`
 export const winner = styled.p`
     font-size: 60px;
     text-align: center;
+    color: gold;
+    animation: ${pulse} 1s infinite, ${glow} 1.5s infinite;
 `

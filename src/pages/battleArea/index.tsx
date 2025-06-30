@@ -158,8 +158,10 @@ export const BattleArea = () => {
         </St.battleArena>
         <Modal title='Vitoria' open={isOpen} hideClose={true} size='lg' onClose={() => setOpen(false)}>
             <St.modalContent>
-                <St.winner>
-                    {battleResult?.winner}
+                <>
+                    <St.winner>
+                        {battleResult?.winner}
+                    </St.winner>
                     <Button
                         label='Reiniciar a batalha'
                         onClick={handleRestart}
@@ -168,7 +170,7 @@ export const BattleArea = () => {
                         label='Voltar para o menu'
                         onClick={handleBackToMenu}
                     />
-                </St.winner>
+                </>
             </St.modalContent>
         </Modal>
     </St.container>
